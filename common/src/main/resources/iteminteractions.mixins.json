@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "dev.mineland.iteminteractions.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "client": [
+    "GuiGraphicsMixin",
+    "InventoryGuiMixin",
+    "SettingsScreenMixin"
+  ],
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
