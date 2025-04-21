@@ -1,16 +1,14 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" factoryName="Application" name="Minecraft Client (:fabric)" type="Application">
-    <option name="MAIN_CLASS_NAME" value="dev.architectury.transformer.TransformerRuntime"/>
-    <module name="iteminteractions.fabric.main"/>
-    <option name="PROGRAM_PARAMETERS" value=""/>
-    <option name="VM_PARAMETERS" value="-Dfabric.dli.config=/home/andy/Documents/code/java/minecraft/iteminteractions/fabric/.gradle/loom-cache/launch.cfg -Dfabric.dli.env=client -Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient -Darchitectury.main.class=/home/andy/Documents/code/java/minecraft/iteminteractions/fabric/.gradle/architectury/.main_class -Darchitectury.runtime.transformer=/home/andy/Documents/code/java/minecraft/iteminteractions/fabric/.gradle/architectury/.transforms -Darchitectury.properties=/home/andy/Documents/code/java/minecraft/iteminteractions/fabric/.gradle/architectury/.properties -Djdk.attach.allowAttachSelf=true -javaagent:/home/andy/Documents/code/java/minecraft/iteminteractions/.gradle/architectury/architectury-transformer-agent.jar"/>
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/fabric/run/"/>
+  <configuration default="false" name="Minecraft Client (:fabric)" type="Application" factoryName="Application">
+    <option name="ALTERNATIVE_JRE_PATH" value="$PROJECT_DIR$/../../../../programs/jdk/jbr_jcef-21.0.6-linux-x64-b895.105" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="MAIN_CLASS_NAME" value="dev.architectury.transformer.TransformerRuntime" />
+    <module name="iteminteractions.fabric.main" />
+    <shortenClasspath name="ARGS_FILE" />
+    <option name="VM_PARAMETERS" value="-Dfabric.dli.config=$PROJECT_DIR$/fabric/.gradle/loom-cache/launch.cfg -Dfabric.dli.env=client -Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient -Darchitectury.main.class=$PROJECT_DIR$/fabric/.gradle/architectury/.main_class -Darchitectury.runtime.transformer=$PROJECT_DIR$/fabric/.gradle/architectury/.transforms -Darchitectury.properties=$PROJECT_DIR$/fabric/.gradle/architectury/.properties -Djdk.attach.allowAttachSelf=true -javaagent:$PROJECT_DIR$/.gradle/architectury/architectury-transformer-agent.jar -XX:+AllowEnhancedClassRedefinition" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/fabric/run/" />
     <method v="2">
-      <option enabled="true" name="Make"/>
+      <option name="Make" enabled="true" />
     </method>
-    <envs>
-      
-    </envs>
-    <shortenClasspath name="ARGS_FILE"/>
-  <classpathModifications/></configuration>
+  </configuration>
 </component>

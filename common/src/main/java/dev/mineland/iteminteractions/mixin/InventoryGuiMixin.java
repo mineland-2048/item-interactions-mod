@@ -1,6 +1,8 @@
 package dev.mineland.iteminteractions.mixin;
 
 import dev.mineland.iteminteractions.GlobalDirt;
+import dev.mineland.iteminteractions.ItemInteractionsConfig;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.item.ItemStack;
@@ -27,10 +29,19 @@ public class InventoryGuiMixin {
                                            CallbackInfo callbackInfo) {
         GlobalDirt.carriedItem = itemStack;
 
-
-
     }
 
+    @Inject(method = "render", at = @At("HEAD"))
+    public void renderMixinHead(GuiGraphics guiGraphics, int i, int j, float f, CallbackInfo ci) {
+        GlobalDirt.updateTimer();
+
+    }
+    @Inject(method = "render", at = @At("TAIL"))
+    public void renderMixinTail(GuiGraphics guiGraphics, int i, int j, float f, CallbackInfo ci) {
+        GlobalDirt.tailUpdateTimer();
+        GlobalDirt.updateMousePositions();
+
+    }
 
     @Inject(method = "init", at = @At("TAIL"))
     protected void initMixin(CallbackInfo ci) {
