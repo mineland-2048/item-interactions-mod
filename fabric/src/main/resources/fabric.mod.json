@@ -19,7 +19,8 @@
     ],
     "client": [
       "dev.mineland.iteminteractions.fabric.client.IteminteractionsFabricClient"
-    ]
+    ],
+    "modmenu": ["dev.mineland.iteminteractions.fabric.client.ItemInteractionsModMenuApiImpl"]
   },
   "mixins": [
     "iteminteractions.mixins.json"

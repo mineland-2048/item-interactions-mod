@@ -9,13 +9,19 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Scanner;
 
-import static dev.mineland.iteminteractions.GlobalDirt.deceleration;
+//import static dev.mineland.iteminteractions.GlobalDirt.deceleration;
 
 public class ItemInteractionsConfig {
     private static final Path configPath = Path.of("config", "item_interactions.cfg");
     public static animation animationConfig;
-    public static float scaleSpeed;
-    public static float scaleAmount;
+
+    public static double scaleSpeed;
+    public static double scaleAmount;
+
+    public static double mouseSpeedMult;
+    public static double mouseDeceleration;
+
+    public static boolean debugDraws;
 
 
     /*  Default settings:
@@ -24,26 +30,25 @@ public class ItemInteractionsConfig {
             scale_amount = 0.1
     */
     /*
-          TODO: Add a config screen.
-                Currently, Settings reload upon closing the video settings screen
-                Check if sodium works with this
+          TODO: Fix config screen items wrong z plane
     */
     public static void init() {
-        animationConfig = animation.ANIM_SPEED;
-        scaleSpeed = 1;
-        scaleAmount = 0.1f;
-        deceleration = 0.8f;
+        animationConfig = DefaultValues.animationConfig;
+        scaleSpeed = DefaultValues.scaleSpeed;
+        scaleAmount = DefaultValues.scaleAmount;
+        mouseDeceleration = DefaultValues.mouseDeceleration;
+        mouseSpeedMult = DefaultValues.mouseSpeedMult;
     }
 
-//    I dont know if java has any counting function for strings, so i made this. Aeugh
-    private static int count(String s, String match) {
-        int length = match.length();
-        int result = 0;
-        for (int i = 0; i <= s.length() - length; i++) {
-            if (s.substring(i, i+length).equals(match)) result++;
-        }
-        return result;
+    static class DefaultValues {
+        public static final animation animationConfig = animation.ANIM_SPEED;
+        public static final double scaleSpeed = 1;
+        public static final double scaleAmount = 0.1;
+        public static final double mouseDeceleration = 1;
+        public static final double mouseSpeedMult = 1;
+
     }
+
 
     public static void refreshConfig() {
         try {
@@ -57,7 +62,7 @@ public class ItemInteractionsConfig {
             int lineCount = 0;
             while (lector.hasNext() && lineCount < 20) {
                 String line = lector.nextLine();
-                int equalCount = count(line, "=");
+                int equalCount = MiscUtils.count(line, "=");
                 if (equalCount != 1) {
                     ItemInteractions.infoMessage("Skipping line " + (lineCount+1) + ": `" + line + "`. Contains " + equalCount + " `=``");
                     continue;
@@ -82,9 +87,13 @@ public class ItemInteractionsConfig {
                                 animationConfig = animation.ANIM_SPEED;
                                 break;
 
+                            case "none":
+                                animationConfig = animation.NONE;
+                                break;
+
                             default:
-                                ItemInteractions.warnMessage("Unknown animation setting. Using Default");
-                                animationConfig = animation.ANIM_SPEED;
+                                ItemInteractions.warnMessage("Unknown animation setting. Using Default (speed)");
+                                animationConfig = DefaultValues.animationConfig;
                                 break;
                         }
                         break;
@@ -94,7 +103,7 @@ public class ItemInteractionsConfig {
                             scaleSpeed = Float.parseFloat(value);
                         } catch (Exception e) {
                             ItemInteractions.warnMessage("Error parsing scale speed. Using default\n" + e.getMessage());
-                            scaleSpeed = 1;
+                            scaleSpeed = DefaultValues.scaleSpeed;
                         }
                         break;
 
@@ -103,19 +112,32 @@ public class ItemInteractionsConfig {
                             scaleAmount = Float.parseFloat(value);
                         } catch (Exception e) {
                             ItemInteractions.warnMessage("Error parsing scale amount. Using default\n" + e.getMessage());
-                            scaleAmount = 0.1f;
+                            scaleAmount = DefaultValues.scaleAmount;
                         }
                         break;
 
                     case "deceleration":
                         try {
-                            deceleration = Float.parseFloat(value);
+                            mouseDeceleration = Float.parseFloat(value);
                         } catch (Exception e) {
                             ItemInteractions.warnMessage("Error parsing deceleration. Using default\n" + e.getMessage());
-                            deceleration = 0.8f;
+                            mouseDeceleration = DefaultValues.mouseDeceleration;
                         }
                         break;
 
+                    case "mouse_speed_multiplier":
+                        try {
+                            mouseSpeedMult = Float.parseFloat(value);
+                        } catch (Exception e) {
+                            ItemInteractions.warnMessage("Error parsing mouse speed multiplier. Using default\n" + e.getMessage());
+                            mouseSpeedMult = DefaultValues.mouseSpeedMult;
+                        }
+                        break;
+
+                    case "debug":
+                        if (value.equals("true")) ItemInteractionsConfig.debugDraws = true;
+                        if (value.equals("false")) ItemInteractionsConfig.debugDraws = false;
+                        break;
 
                     default:
                         ItemInteractions.infoMessage("Ignoring line " + (lineCount+1) + ". Unknown setting `" + arg + "`.");
@@ -128,8 +150,8 @@ public class ItemInteractionsConfig {
 
 
             if (animationConfig == null) {
-                animationConfig = animation.ANIM_SPEED;
-                ItemInteractions.infoMessage("Defaulting to animation = speed");
+                animationConfig = DefaultValues.animationConfig;
+                ItemInteractions.infoMessage("Defaulting to animation: speed");
             }
 
 //            ItemInteractions.infoMessage("Loop count: " + lineCount);
@@ -138,7 +160,7 @@ public class ItemInteractionsConfig {
             writeConfig(configFile);
 
 //            ItemInteractions.infoMessage("Final config file: \n" + configFileString);
-            ItemInteractions.infoMessage("Configuration loaded! File has been sanitized");
+//            ItemInteractions.infoMessage("Configuration loaded! File has been sanitized");
 
         } catch (IOException e) {
             ItemInteractions.warnMessage("Failed to refresh the config! \n" + e.getMessage());
@@ -159,15 +181,27 @@ public class ItemInteractionsConfig {
                 scale_speed = %f
                 scale_amount = %f
                 deceleration = %f
+                mouse_speed_multiplier = %f
+                debug = %s
                 """,
-                ItemInteractions.getAnimationSettingString(animationConfig),
+                animationConfig.name,
                 scaleSpeed,
                 scaleAmount,
-                deceleration
+                mouseDeceleration,
+                mouseSpeedMult,
+                debugDraws ? "true" : "false"
                 );
 
         obj.write(configFileString);
         obj.flush();
+    }
+
+    public static void createConfig() {
+        try {
+            writeConfig(configPath.toFile());
+        } catch (Exception e) {
+            ItemInteractions.warnMessage("Error writing config file! \n" + e.toString());
+        }
     }
 
 
